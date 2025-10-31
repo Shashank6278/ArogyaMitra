@@ -15,11 +15,20 @@ const razorpayInstance = new razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
 
+// Function to generate 16-digit UHID
+const generateUHID = () => {
+    // Generate a random 16-digit number
+    const timestamp = Date.now().toString(); // 13 digits
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 3 digits
+    const uhid = timestamp + random;
+    return uhid.slice(0, 16); // Ensure exactly 16 digits
+}
+
 // API to register user
 const registerUser = async (req, res) => {
 
     try {
-        const { name, email, password } = req.body;
+        let { name, email, password, isRuralUser, uhid } = req.body;
 
         // checking for all data to register user
         if (!name || !email || !password) {
@@ -36,6 +45,28 @@ const registerUser = async (req, res) => {
             return res.json({ success: false, message: "Please enter a strong password" })
         }
 
+        // Generate UHID if not provided
+        if (!uhid) {
+            let isUnique = false;
+            while (!isUnique) {
+                uhid = generateUHID();
+                const existingUser = await userModel.findOne({ uhid });
+                if (!existingUser) {
+                    isUnique = true;
+                }
+            }
+        } else {
+            // Validate provided UHID is 16 digits
+            if (!/^\d{16}$/.test(uhid)) {
+                return res.json({ success: false, message: "UHID must be 16 digits" })
+            }
+            // Check if UHID already exists
+            const existingUser = await userModel.findOne({ uhid });
+            if (existingUser) {
+                return res.json({ success: false, message: "UHID already exists" })
+            }
+        }
+
         // hashing user password
         const salt = await bcrypt.genSalt(10); // the more no. round the more time it will take
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -44,13 +75,15 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            isRuralUser: isRuralUser || false,
+            uhid
         }
 
         const newUser = new userModel(userData)
         const user = await newUser.save()
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
 
-        res.json({ success: true, token })
+        res.json({ success: true, token, uhid })
 
     } catch (error) {
         console.log(error)

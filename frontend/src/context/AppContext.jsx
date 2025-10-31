@@ -12,6 +12,8 @@ const AppContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
     const [userData, setUserData] = useState(false)
+    const [ashaToken, setAshaToken] = useState(localStorage.getItem('ashaToken') ? localStorage.getItem('ashaToken') : '')
+    const [ashaData, setAshaData] = useState(false)
 
     // Getting Doctors using API
     const getDoctosData = async () => {
@@ -52,6 +54,26 @@ const AppContextProvider = (props) => {
 
     }
 
+    // Getting ASHA Profile using API
+    const loadAshaProfileData = async () => {
+
+        try {
+
+            const { data } = await axios.get(backendUrl + '/api/asha/profile', { headers: { token: ashaToken } })
+
+            if (data.success) {
+                setAshaData(data.asha)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+
+    }
+
     useEffect(() => {
         getDoctosData()
     }, [])
@@ -62,12 +84,20 @@ const AppContextProvider = (props) => {
         }
     }, [token])
 
+    useEffect(() => {
+        if (ashaToken) {
+            loadAshaProfileData()
+        }
+    }, [ashaToken])
+
     const value = {
         doctors, getDoctosData,
         currencySymbol,
         backendUrl,
         token, setToken,
-        userData, setUserData, loadUserProfileData
+        userData, setUserData, loadUserProfileData,
+        ashaToken, setAshaToken,
+        ashaData, setAshaData, loadAshaProfileData
     }
 
     return (

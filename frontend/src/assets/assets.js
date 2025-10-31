@@ -55,7 +55,8 @@ export const assets = {
     dropdown_icon,
     upload_icon,
     stripe_logo,
-    razorpay_logo
+    razorpay_logo,
+    asha_workers_img: header_img // TODO: Replace with actual ASHA workers image
 }
 
 export const specialityData = [
