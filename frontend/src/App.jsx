@@ -26,6 +26,8 @@ import AshaLogin from './pages/AshaLogin'
 import AshaRegister from './pages/AshaRegister'
 import AshaProfile from './pages/AshaProfile'
 import AshaDashboard from './pages/AshaDashboard'
+import AshaIndividualReport from './pages/AshaIndividualReport'
+import AshaDistrictReport from './pages/AshaDistrictReport'
 import RuralDashboard from './pages/RuralDashboard'
 import AshaAbout from './pages/AshaAbout'
 import Careers from './pages/Careers'
@@ -53,6 +55,8 @@ const App = () => {
         <Route path='/asha-register' element={<AshaRegister />} />
         <Route path='/asha-profile' element={<AshaProfile />} />
         <Route path='/asha-dashboard' element={<AshaDashboard />} />
+        <Route path='/asha-report/individual/:userId' element={<AshaIndividualReport />} />
+        <Route path='/asha-report/district/:district' element={<AshaDistrictReport />} />
         <Route path='/rural-dashboard' element={<RuralDashboard />} />
         <Route path='/about' element={<About />} />
         <Route path='/asha-about' element={<AshaAbout />} />

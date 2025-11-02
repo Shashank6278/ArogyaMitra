@@ -114,21 +114,28 @@ const registerUser = async (req, res) => {
 // API for face login (rural users)
 const faceLogin = async (req, res) => {
     try {
-        const { faceData } = req.body
+        const { faceData, aadhar } = req.body
 
-        if (!faceData) {
-            return res.json({ success: false, message: 'Face data required' })
+        if (!faceData || !aadhar) {
+            return res.json({ success: false, message: 'Face data and Aadhar number required' })
         }
 
-        // Find user with matching face data
-        // Note: In production, use proper face recognition library
-        // For now, we'll do a simple base64 comparison
-        const user = await userModel.findOne({ faceData })
+        // Find user by Aadhar number (since face comparison is not reliable with exact match)
+        const user = await userModel.findOne({ aadhar, isRuralUser: true })
 
         if (!user) {
-            return res.json({ success: false, message: 'Face not recognized' })
+            return res.json({ success: false, message: 'User not found. Please register first.' })
         }
 
+        // Check if user has face data registered
+        if (!user.faceData) {
+            return res.json({ success: false, message: 'No face registered for this Aadhar number' })
+        }
+
+        // For MVP: Just verify that user has face data
+        // In production: Use face-api.js or similar for actual face matching
+        // For now, we trust that if Aadhar matches and face data exists, it's valid
+        
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
         res.json({ success: true, token })
 

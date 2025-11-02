@@ -69,6 +69,23 @@ const getAllHealthRecords = async (req, res) => {
     }
 };
 
+// API to get single health record by record ID (for reports)
+const getHealthRecordById = async (req, res) => {
+    try {
+        const { recordId } = req.params;
+        const record = await healthRecordModel.findById(recordId);
+        
+        if (!record) {
+            return res.json({ success: false, message: 'Health record not found' });
+        }
+
+        res.json({ success: true, record });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 // API to add vaccination record
 const addVaccination = async (req, res) => {
     try {
@@ -111,5 +128,5 @@ const addVisit = async (req, res) => {
     }
 };
 
-export { updateHealthRecord, getMyHealthRecord, getAllHealthRecords, addVaccination, addVisit };
+export { updateHealthRecord, getMyHealthRecord, getAllHealthRecords, getHealthRecordById, addVaccination, addVisit };
 

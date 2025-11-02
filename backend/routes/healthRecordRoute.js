@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateHealthRecord, getMyHealthRecord, getAllHealthRecords, addVaccination, addVisit } from '../controllers/healthRecordController.js';
+import { updateHealthRecord, getMyHealthRecord, getAllHealthRecords, getHealthRecordById, addVaccination, addVisit } from '../controllers/healthRecordController.js';
 import authUser from '../middleware/authUser.js';
 import authAsha from '../middleware/authAsha.js';
 
@@ -13,6 +13,7 @@ healthRecordRouter.post('/add-visit', authUser, addVisit);
 
 // ASHA routes (protected by authAsha)
 healthRecordRouter.get('/all-records', authAsha, getAllHealthRecords);
+healthRecordRouter.get('/record/:recordId', authAsha, getHealthRecordById);
 
 export default healthRecordRouter;
 

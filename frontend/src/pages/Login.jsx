@@ -88,10 +88,17 @@ const Login = () => {
       setShowFaceID(false)
       toast.success('Face registered! Please complete the form.')
     } else {
-      // Face login
+      // Face login - need Aadhar number
+      if (!aadhar || aadhar.length !== 12) {
+        toast.error('Please enter your 12-digit Aadhar number first')
+        setShowFaceID(false)
+        return
+      }
+
       try {
         const { data } = await axios.post(backendUrl + '/api/user/face-login', { 
-          faceData: capturedFaceData 
+          faceData: capturedFaceData,
+          aadhar: aadhar
         })
 
         if (data.success) {
@@ -279,28 +286,44 @@ const Login = () => {
 
         {/* Face ID Login for Rural Users */}
         {state === 'Login' && isRuralUser && (
-          <div className='w-full bg-blue-50 border-2 border-blue-300 rounded-lg p-4'>
-            <p className='text-sm font-semibold text-blue-800 mb-2'>
-              ಮುಖ ಲಾಗಿನ್ (Face Login)
-            </p>
-            <button
-              type='button'
-              onClick={() => {
-                setFaceIDMode('login')
-                setShowFaceID(true)
-              }}
-              className='w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium flex items-center justify-center gap-2'
-            >
-              <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z' />
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 13a3 3 0 11-6 0 3 3 0 016 0z' />
-              </svg>
-              Login with Face ID
-            </button>
-            <p className='text-xs text-blue-700 mt-2 text-center'>
-              ಲಾಗಿನ್ ಮಾಡಲು ನಿಮ್ಮ ಮುಖವನ್ನು ತೋರಿಸಿ
-            </p>
-          </div>
+          <>
+            <div className='w-full'>
+              <p>Aadhar Number (12 digits) *</p>
+              <input 
+                onChange={(e) => setAadhar(e.target.value)} 
+                value={aadhar} 
+                className='border border-[#DADADA] rounded w-full p-2 mt-1' 
+                type="text" 
+                maxLength="12"
+                pattern="\d{12}"
+                placeholder="Enter your 12-digit Aadhar number"
+                required
+              />
+              <p className='text-xs text-gray-500 mt-1'>Required for Face ID login</p>
+            </div>
+            <div className='w-full bg-blue-50 border-2 border-blue-300 rounded-lg p-4'>
+              <p className='text-sm font-semibold text-blue-800 mb-2'>
+                ಮುಖ ಲಾಗಿನ್ (Face Login)
+              </p>
+              <button
+                type='button'
+                onClick={() => {
+                  setFaceIDMode('login')
+                  setShowFaceID(true)
+                }}
+                className='w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium flex items-center justify-center gap-2'
+              >
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z' />
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 13a3 3 0 11-6 0 3 3 0 016 0z' />
+                </svg>
+                Login with Face ID
+              </button>
+              <p className='text-xs text-blue-700 mt-2 text-center'>
+                ಲಾಗಿನ್ ಮಾಡಲು ನಿಮ್ಮ ಮುಖವನ್ನು ತೋರಿಸಿ
+              </p>
+            </div>
+          </>
         )}
 
         {/* Email and Password - Only for Urban Users */}
