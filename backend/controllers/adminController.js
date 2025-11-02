@@ -148,11 +148,34 @@ const adminDashboard = async (req, res) => {
     }
 }
 
+// API to get appointment statistics
+const getAppointmentStats = async (req, res) => {
+    try {
+        const totalAppointments = await appointmentModel.countDocuments()
+        const urbanUsers = await userModel.countDocuments({ isRuralUser: false })
+        
+        // Calculate daily average (assuming system started 30 days ago for demo)
+        const daysActive = 30
+        const dailyAverage = Math.round(totalAppointments / daysActive)
+        
+        res.json({ 
+            success: true, 
+            totalAppointments, 
+            urbanUsers,
+            dailyAverage 
+        })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 export {
     loginAdmin,
     appointmentsAdmin,
     appointmentCancel,
     addDoctor,
     allDoctors,
-    adminDashboard
+    adminDashboard,
+    getAppointmentStats
 }

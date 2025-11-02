@@ -254,6 +254,27 @@ const doctorDashboard = async (req, res) => {
     }
 }
 
+// API to get doctor statistics
+const getDoctorStats = async (req, res) => {
+    try {
+        const totalDoctors = await doctorModel.countDocuments()
+        const doctors = await doctorModel.find({}, 'speciality')
+        
+        // Count doctors by specialization
+        const specializations = {}
+        doctors.forEach(doc => {
+            if (doc.speciality) {
+                specializations[doc.speciality] = (specializations[doc.speciality] || 0) + 1
+            }
+        })
+        
+        res.json({ success: true, totalDoctors, specializations })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 export {
     registerDoctor,
     loginDoctor,
@@ -264,5 +285,6 @@ export {
     appointmentComplete,
     doctorDashboard,
     doctorProfile,
-    updateDoctorProfile
+    updateDoctorProfile,
+    getDoctorStats
 }

@@ -54,6 +54,8 @@ const translations = {
     'landing.helpline.desc': 'Access emergency contact numbers',
     'landing.explore': 'Explore Website',
     'landing.explore.desc': 'Browse our healthcare services',
+    'landing.statistics': 'View Statistics',
+    'landing.statistics.desc': 'Comprehensive healthcare data and insights',
     'landing.getstarted': 'Get Started',
     
     // Navigation
@@ -115,6 +117,8 @@ const translations = {
     'landing.helpline.desc': 'ತುರ್ತು ಸಂಪರ್ಕ ಸಂಖ್ಯೆಗಳನ್ನು ಪ್ರವೇಶಿಸಿ',
     'landing.explore': 'ವೆಬ್‌ಸೈಟ್ ಅನ್ವೇಷಿಸಿ',
     'landing.explore.desc': 'ನಮ್ಮ ಆರೋಗ್ಯ ಸೇವೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    'landing.statistics': 'ಅಂಕಿಅಂಶಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    'landing.statistics.desc': 'ಸಮಗ್ರ ಆರೋಗ್ಯ ಡೇಟಾ ಮತ್ತು ಒಳನೋಟಗಳು',
     'landing.getstarted': 'ಪ್ರಾರಂಭಿಸಿ',
     
     // Navigation

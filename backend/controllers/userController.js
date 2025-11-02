@@ -430,6 +430,17 @@ const verifyStripe = async (req, res) => {
 
 }
 
+// API to get rural user count
+const getRuralUserCount = async (req, res) => {
+    try {
+        const count = await userModel.countDocuments({ isRuralUser: true })
+        res.json({ success: true, count })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 export {
     loginUser,
     registerUser,
@@ -442,5 +453,6 @@ export {
     paymentRazorpay,
     verifyRazorpay,
     paymentStripe,
-    verifyStripe
+    verifyStripe,
+    getRuralUserCount
 }

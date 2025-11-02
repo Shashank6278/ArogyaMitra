@@ -85,18 +85,23 @@ const DoctorAuth = () => {
         const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password })
 
         if (data.success) {
-          localStorage.setItem('doctorToken', data.token)
-          setDoctorToken(data.token)
-          toast.success('Login successful!')
-          // Redirect to admin panel
-          window.location.href = 'http://localhost:5174'
+          localStorage.setItem('dToken', data.token)
+          if (typeof setDoctorToken === 'function') {
+            try { setDoctorToken(data.token) } catch {}
+          }
+          toast.success('Login successful! Redirecting to your dashboard...')
+          // Redirect to doctor dashboard in admin panel (port 5174)
+          setTimeout(() => {
+            window.location.replace('http://localhost:5174')
+          }, 1500)
         } else {
           toast.error(data.message)
         }
       }
     } catch (error) {
       console.log(error)
-      toast.error('An error occurred')
+      const msg = error?.response?.data?.message || error?.message || 'An error occurred'
+      toast.error(msg)
     }
   }
 

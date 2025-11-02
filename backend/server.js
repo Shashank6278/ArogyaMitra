@@ -9,6 +9,7 @@ import adminRouter from "./routes/adminRoute.js"
 import aiRouter from "./routes/aiRoute.js"
 import ashaRouter from "./routes/ashaRoute.js"
 import healthRecordRouter from "./routes/healthRecordRoute.js"
+import appointmentRouter from "./routes/appointmentRoute.js"
 
 // app config
 const app = express()
@@ -27,6 +28,7 @@ app.use("/api/doctor", doctorRouter)
 app.use("/api/ai", aiRouter)
 app.use("/api/asha", ashaRouter)
 app.use("/api/health", healthRecordRouter)
+app.use("/api/appointment", appointmentRouter)
 
 app.get("/", (req, res) => {
   res.send("API Working")

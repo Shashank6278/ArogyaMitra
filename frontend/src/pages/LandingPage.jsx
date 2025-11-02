@@ -39,6 +39,15 @@ const LandingPage = () => {
       color: 'from-purple-500 to-violet-600',
       hoverColor: 'hover:from-purple-600 hover:to-violet-700',
       path: '/home'
+    },
+    {
+      titleKey: 'landing.statistics',
+      descKey: 'landing.statistics.desc',
+      icon: Heart,
+      color: 'from-orange-500 to-red-600',
+      hoverColor: 'hover:from-orange-600 hover:to-red-700',
+      path: '/statistics',
+      fullWidth: true
     }
   ]
 
@@ -63,9 +72,9 @@ const LandingPage = () => {
               <div
                 key={index}
                 onClick={() => navigate(option.path)}
-                className={`group cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden`}
+                className={`${option.fullWidth ? 'md:col-span-2' : ''} group cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden`}
               >
-                <div className={`bg-gradient-to-br ${option.color} ${option.hoverColor} p-8 transition-all duration-300`}>
+                <div className={`bg-gradient-to-br ${option.color} ${option.hoverColor} ${option.fullWidth ? 'p-12' : 'p-8'} transition-all duration-300`}>
                   <div className='flex items-center justify-center mb-4'>
                     <div className='bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-4'>
                       <Icon className='w-12 h-12 text-white' strokeWidth={2} />

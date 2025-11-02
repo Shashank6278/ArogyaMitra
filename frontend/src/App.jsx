@@ -27,11 +27,14 @@ import AshaRegister from './pages/AshaRegister'
 import AshaProfile from './pages/AshaProfile'
 import AshaDashboard from './pages/AshaDashboard'
 import AshaIndividualReport from './pages/AshaIndividualReport'
-import AshaDistrictReport from './pages/AshaDistrictReport'
+import AshaDistrictReport from './pages/AshaDistrictReportPDF'
 import RuralDashboard from './pages/RuralDashboard'
 import AshaAbout from './pages/AshaAbout'
 import Careers from './pages/Careers'
 import AshaRoleDetail from './pages/AshaRoles/AshaRoleDetail'
+import Statistics from './pages/Statistics'
+import RuralStatistics from './pages/RuralStatistics'
+import UrbanStatistics from './pages/UrbanStatistics'
 
 const App = () => {
   return (
@@ -63,6 +66,9 @@ const App = () => {
         <Route path='/asha-role/:roleId' element={<AshaRoleDetail />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/careers' element={<Careers />} />
+        <Route path='/statistics' element={<Statistics />} />
+        <Route path='/statistics/rural' element={<RuralStatistics />} />
+        <Route path='/statistics/urban' element={<UrbanStatistics />} />
         <Route path='/appointment/:docId' element={<Appointment />} />
         <Route path='/my-appointments' element={<MyAppointments />} />
         <Route path='/my-profile' element={<MyProfile />} />

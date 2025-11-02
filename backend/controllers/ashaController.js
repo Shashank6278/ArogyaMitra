@@ -113,6 +113,28 @@ const updateAshaVillages = async (req, res) => {
     }
 }
 
-export { registerAsha, loginAsha, getAshaProfile, updateAshaVillages }
+// API to get ASHA worker count and village count
+const getAshaCount = async (req, res) => {
+    try {
+        const count = await ashaModel.countDocuments()
+        const ashas = await ashaModel.find({}, 'village1 village2 village3 village')
+        
+        // Count unique villages
+        const villagesSet = new Set()
+        ashas.forEach(asha => {
+            if (asha.village) villagesSet.add(asha.village)
+            if (asha.village1) villagesSet.add(asha.village1)
+            if (asha.village2) villagesSet.add(asha.village2)
+            if (asha.village3) villagesSet.add(asha.village3)
+        })
+        
+        res.json({ success: true, count, villages: villagesSet.size })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export { registerAsha, loginAsha, getAshaProfile, updateAshaVillages, getAshaCount }
 
 
