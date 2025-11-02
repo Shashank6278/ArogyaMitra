@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import VaccinationManager from '../components/VaccinationManager'
 
 const RuralDashboard = () => {
   const { backendUrl, token, userData } = useContext(AppContext)
@@ -15,7 +16,7 @@ const RuralDashboard = () => {
   const [medicalConditions, setMedicalConditions] = useState('')
   const [allergies, setAllergies] = useState('')
   const [currentMedications, setCurrentMedications] = useState('')
-  const [vaccinationStatus, setVaccinationStatus] = useState('')
+  const [vaccinations, setVaccinations] = useState([])
   const [village, setVillage] = useState('')
   const [district, setDistrict] = useState('')
   const [state, setState] = useState('')
@@ -31,7 +32,7 @@ const RuralDashboard = () => {
         setMedicalConditions(data.record.medicalConditions || '')
         setAllergies(data.record.allergies || '')
         setCurrentMedications(data.record.currentMedications || '')
-        setVaccinationStatus(data.record.vaccinationStatus || '')
+        setVaccinations(data.record.vaccinations || [])
         setVillage(data.record.village || userData?.village || '')
         setDistrict(data.record.district || userData?.district || '')
         setState(data.record.state || userData?.state || '')
@@ -63,7 +64,7 @@ const RuralDashboard = () => {
         medicalConditions,
         allergies,
         currentMedications,
-        vaccinationStatus,
+        vaccinations,
         village,
         district,
         state
@@ -140,17 +141,6 @@ const RuralDashboard = () => {
                   <p className='font-medium'>Weight (kg)</p>
                   <input value={weight} onChange={(e) => setWeight(e.target.value)} className='border border-gray-300 rounded w-full p-2 mt-1' type='text' />
                 </div>
-                <div>
-                  <p className='font-medium'>Vaccination Status</p>
-                  <select value={vaccinationStatus} onChange={(e) => setVaccinationStatus(e.target.value)} className='border border-gray-300 rounded w-full p-2 mt-1'>
-                    <option value=''>Select</option>
-                    <option value='Up-to-date'>Up-to-date</option>
-                    <option value='Partially Complete'>Partially Complete</option>
-                    <option value='Incomplete'>Incomplete</option>
-                    <option value='Not Vaccinated'>Not Vaccinated</option>
-                    <option value='Unknown'>Unknown</option>
-                  </select>
-                </div>
                 <div className='sm:col-span-2'>
                   <p className='font-medium'>Medical Conditions</p>
                   <textarea value={medicalConditions} onChange={(e) => setMedicalConditions(e.target.value)} className='border border-gray-300 rounded w-full p-2 mt-1' rows='3' placeholder='Diabetes, Hypertension, etc.'></textarea>
@@ -164,6 +154,15 @@ const RuralDashboard = () => {
                   <textarea value={currentMedications} onChange={(e) => setCurrentMedications(e.target.value)} className='border border-gray-300 rounded w-full p-2 mt-1' rows='2' placeholder='List current medications'></textarea>
                 </div>
               </div>
+              
+              {/* Vaccination Manager */}
+              <div className='mt-6'>
+                <VaccinationManager 
+                  vaccinations={vaccinations} 
+                  onUpdate={setVaccinations} 
+                />
+              </div>
+
               <div className='flex gap-3 pt-4'>
                 <button type='submit' className='bg-primary text-white px-8 py-2 rounded-md'>Save</button>
                 <button type='button' onClick={() => setEditing(false)} className='border border-gray-300 px-8 py-2 rounded-md'>Cancel</button>
@@ -199,10 +198,6 @@ const RuralDashboard = () => {
                       <p className='font-medium'>{healthRecord.weight ? healthRecord.weight + ' kg' : '-'}</p>
                     </div>
                     <div className='border-b pb-2 sm:col-span-2'>
-                      <p className='text-gray-600 text-sm'>Vaccination Status</p>
-                      <p className='font-medium'>{healthRecord.vaccinationStatus || '-'}</p>
-                    </div>
-                    <div className='border-b pb-2 sm:col-span-2'>
                       <p className='text-gray-600 text-sm'>Medical Conditions</p>
                       <p className='font-medium'>{healthRecord.medicalConditions || '-'}</p>
                     </div>
@@ -216,20 +211,13 @@ const RuralDashboard = () => {
                     </div>
                   </div>
                   
-                  {healthRecord.vaccinations && healthRecord.vaccinations.length > 0 && (
-                    <div className='mt-6'>
-                      <h3 className='font-semibold text-lg mb-3'>Vaccination Records</h3>
-                      <div className='space-y-2'>
-                        {healthRecord.vaccinations.map((vac, idx) => (
-                          <div key={idx} className='border rounded p-3'>
-                            <p className='font-medium'>{vac.name}</p>
-                            <p className='text-sm text-gray-600'>Date: {vac.date}</p>
-                            {vac.nextDueDate && <p className='text-sm text-gray-600'>Next Due: {vac.nextDueDate}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {/* Vaccination Records - Read Only */}
+                  <div className='mt-6'>
+                    <VaccinationManager 
+                      vaccinations={healthRecord.vaccinations || []} 
+                      onUpdate={() => {}} 
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className='text-center py-12 text-gray-500'>

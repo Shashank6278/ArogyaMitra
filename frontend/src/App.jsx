@@ -1,7 +1,13 @@
 import React from 'react'
+import LanguageProvider from './context/LanguageContext'
 import Navbar from './components/Navbar'
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import LandingPage from './pages/LandingPage'
+import RuralAuth from './pages/RuralAuth'
+import UrbanAuth from './pages/UrbanAuth'
+import Helpline from './pages/Helpline'
+import DoctorAuth from './pages/DoctorAuth'
 import Doctors from './pages/Doctors'
 import Login from './pages/Login'
 import About from './pages/About'
@@ -27,12 +33,18 @@ import AshaRoleDetail from './pages/AshaRoles/AshaRoleDetail'
 
 const App = () => {
   return (
-    <div className='mx-4 sm:mx-[10%]'>
-      <ToastContainer />
-      <ConnectionStatus />
-      <Navbar />
+    <LanguageProvider>
+      <div className='mx-4 sm:mx-[10%]'>
+        <ToastContainer />
+        <ConnectionStatus />
+        <Navbar />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/home' element={<Home />} />
+        <Route path='/rural-auth' element={<RuralAuth />} />
+        <Route path='/urban-auth' element={<UrbanAuth />} />
+        <Route path='/helpline' element={<Helpline />} />
+        <Route path='/doctor-auth' element={<DoctorAuth />} />
         <Route path='/doctors' element={<Doctors />} />
         <Route path='/doctors/:speciality' element={<Doctors />} />
         <Route path='/login' element={<Login />} />
@@ -55,6 +67,7 @@ const App = () => {
       <Footer />
       <AIDoctor />
     </div>
+    </LanguageProvider>
   )
 }
 

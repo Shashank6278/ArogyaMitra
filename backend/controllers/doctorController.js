@@ -1,7 +1,71 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import validator from "validator";
+import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+
+// API for doctor Registration
+const registerDoctor = async (req, res) => {
+    try {
+        const { name, email, password, speciality, degree, experience, about, fees, address } = req.body
+        const imageFile = req.file
+
+        // Validation
+        if (!name || !email || !password || !speciality || !degree || !experience || !fees || !address) {
+            return res.json({ success: false, message: 'Missing Details' })
+        }
+
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: 'Please enter a valid email' })
+        }
+
+        if (password.length < 8) {
+            return res.json({ success: false, message: 'Please enter a strong password' })
+        }
+
+        // Check if doctor already exists
+        const existingDoctor = await doctorModel.findOne({ email })
+        if (existingDoctor) {
+            return res.json({ success: false, message: 'Doctor already registered with this email' })
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        // Upload image to cloudinary
+        let imageUrl = ''
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
+            imageUrl = imageUpload.secure_url
+        }
+
+        const doctorData = {
+            name,
+            email,
+            password: hashedPassword,
+            image: imageUrl,
+            speciality,
+            degree,
+            experience,
+            about: about || '',
+            fees,
+            address: JSON.parse(address),
+            date: Date.now(),
+            available: false // Will be approved by admin
+        }
+
+        const newDoctor = new doctorModel(doctorData)
+        await newDoctor.save()
+
+        res.json({ success: true, message: 'Doctor registered successfully. Please wait for admin approval.' })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
 
 // API for doctor Login 
 const loginDoctor = async (req, res) => {
@@ -191,6 +255,7 @@ const doctorDashboard = async (req, res) => {
 }
 
 export {
+    registerDoctor,
     loginDoctor,
     appointmentsDoctor,
     appointmentCancel,

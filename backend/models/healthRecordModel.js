@@ -20,7 +20,8 @@ const healthRecordSchema = new mongoose.Schema({
     
     // Vaccination Records
     vaccinations: [{ 
-        name: String, 
+        name: String,
+        status: String, // Completed, Partially Completed, Pending, Not Taken, Overdue
         date: String, 
         nextDueDate: String 
     }],

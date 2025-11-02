@@ -15,24 +15,34 @@ const razorpayInstance = new razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
 
-// Function to generate 16-digit UHID
-const generateUHID = () => {
-    // Generate a random 16-digit number
-    const timestamp = Date.now().toString(); // 13 digits
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 3 digits
-    const uhid = timestamp + random;
-    return uhid.slice(0, 16); // Ensure exactly 16 digits
+// Function to generate 16-digit UHID: Aadhar(12) + RH/UH(2) + Random(2)
+const generateUHID = (aadhar, isRuralUser) => {
+    // Validate aadhar is 12 digits
+    if (!aadhar || aadhar.length !== 12 || !/^\d{12}$/.test(aadhar)) {
+        throw new Error('Invalid Aadhar number. Must be 12 digits.');
+    }
+    
+    // Determine user type suffix
+    const userType = isRuralUser ? 'RH' : 'UH';
+    
+    // Generate random 2-digit number (01-99)
+    const randomDigits = Math.floor(Math.random() * 99 + 1).toString().padStart(2, '0');
+    
+    // Combine: Aadhar(12) + RH/UH(2) + Random(2) = 16 characters
+    const uhid = aadhar + userType + randomDigits;
+    
+    return uhid;
 }
 
 // API to register user
 const registerUser = async (req, res) => {
 
     try {
-        let { name, email, password, isRuralUser, uhid } = req.body;
+        let { name, email, password, aadhar, isRuralUser, uhid } = req.body;
 
         // checking for all data to register user
-        if (!name || !email || !password) {
-            return res.json({ success: false, message: 'Missing Details' })
+        if (!name || !email || !password || !aadhar) {
+            return res.json({ success: false, message: 'Missing Details. Aadhar is required.' })
         }
 
         // validating email format
@@ -45,20 +55,25 @@ const registerUser = async (req, res) => {
             return res.json({ success: false, message: "Please enter a strong password" })
         }
 
+        // Validate Aadhar number
+        if (!/^\d{12}$/.test(aadhar)) {
+            return res.json({ success: false, message: "Aadhar must be exactly 12 digits" })
+        }
+
         // Generate UHID if not provided
         if (!uhid) {
             let isUnique = false;
             while (!isUnique) {
-                uhid = generateUHID();
+                uhid = generateUHID(aadhar, isRuralUser || false);
                 const existingUser = await userModel.findOne({ uhid });
                 if (!existingUser) {
                     isUnique = true;
                 }
             }
         } else {
-            // Validate provided UHID is 16 digits
-            if (!/^\d{16}$/.test(uhid)) {
-                return res.json({ success: false, message: "UHID must be 16 digits" })
+            // Validate provided UHID format: 12 digits + RH/UH + 2 digits
+            if (!/^[0-9]{12}(RH|UH)[0-9]{2}$/.test(uhid)) {
+                return res.json({ success: false, message: "UHID must be in format: Aadhar(12) + RH/UH + 2 digits" })
             }
             // Check if UHID already exists
             const existingUser = await userModel.findOne({ uhid });
@@ -74,9 +89,14 @@ const registerUser = async (req, res) => {
         const userData = {
             name,
             email,
+            aadhar,
             password: hashedPassword,
             isRuralUser: isRuralUser || false,
-            uhid
+            uhid,
+            faceData: req.body.faceData || '',
+            village: req.body.village || '',
+            district: req.body.district || '',
+            state: req.body.state || ''
         }
 
         const newUser = new userModel(userData)
@@ -84,6 +104,33 @@ const registerUser = async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
 
         res.json({ success: true, token, uhid })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API for face login (rural users)
+const faceLogin = async (req, res) => {
+    try {
+        const { faceData } = req.body
+
+        if (!faceData) {
+            return res.json({ success: false, message: 'Face data required' })
+        }
+
+        // Find user with matching face data
+        // Note: In production, use proper face recognition library
+        // For now, we'll do a simple base64 comparison
+        const user = await userModel.findOne({ faceData })
+
+        if (!user) {
+            return res.json({ success: false, message: 'Face not recognized' })
+        }
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+        res.json({ success: true, token })
 
     } catch (error) {
         console.log(error)
@@ -379,6 +426,7 @@ const verifyStripe = async (req, res) => {
 export {
     loginUser,
     registerUser,
+    faceLogin,
     getProfile,
     updateProfile,
     bookAppointment,
