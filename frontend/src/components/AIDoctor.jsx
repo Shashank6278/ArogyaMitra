@@ -14,7 +14,8 @@ const AIDoctor = () => {
   const [input, setInput] = useState('')
   const [images, setImages] = useState([]) // File[]
   const [loading, setLoading] = useState(false)
-  const fileRef = useRef(null)
+  
+  const fileRef = useRef(null) 
 
   const previewUrls = useMemo(() => images.map(f => URL.createObjectURL(f)), [images])
 
