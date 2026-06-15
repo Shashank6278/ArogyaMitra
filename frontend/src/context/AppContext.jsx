@@ -55,11 +55,18 @@ const AppContextProvider = (props) => {
     }
 
     // Getting ASHA Profile using API
-    const loadAshaProfileData = async () => {
+    const loadAshaProfileData = async (tokenValue = ashaToken) => {
 
         try {
+            if (!tokenValue) return
 
-            const { data } = await axios.get(backendUrl + '/api/asha/profile', { headers: { token: ashaToken } })
+            const { data } = await axios.get(backendUrl + '/api/asha/profile', {
+                headers: {
+                    token: tokenValue,
+                    authorization: `Bearer ${tokenValue}`,
+                    'x-access-token': tokenValue
+                }
+            })
 
             if (data.success) {
                 setAshaData(data.asha)

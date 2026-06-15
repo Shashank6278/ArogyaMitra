@@ -80,7 +80,8 @@ const loginAsha = async (req, res) => {
 // API to get ASHA profile data
 const getAshaProfile = async (req, res) => {
     try {
-        const asha = await ashaModel.findById(req.body.ashaId).select('-password')
+        const ashaId = req.ashaId || req.body.ashaId || req.query.ashaId
+        const asha = await ashaModel.findById(ashaId).select('-password')
         if (!asha) return res.json({ success: false, message: 'ASHA not found' })
         res.json({ success: true, asha })
     } catch (error) {
@@ -92,7 +93,7 @@ const getAshaProfile = async (req, res) => {
 // API to update ASHA villages
 const updateAshaVillages = async (req, res) => {
     try {
-        const { ashaId } = req.body;
+        const ashaId = req.ashaId || req.body.ashaId
         const { village1, village2, village3 } = req.body;
 
         if (!village1) {

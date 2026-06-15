@@ -9,7 +9,7 @@ const AshaLogin = () => {
   const [password, setPassword] = useState('')
 
   const navigate = useNavigate()
-  const { backendUrl, ashaToken, setAshaToken } = useContext(AppContext)
+  const { backendUrl, ashaToken, setAshaToken, loadAshaProfileData } = useContext(AppContext)
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -17,6 +17,7 @@ const AshaLogin = () => {
     if (data.success) {
       localStorage.setItem('ashaToken', data.token)
       setAshaToken(data.token)
+      await loadAshaProfileData(data.token)
       toast.success('Login successful!')
     } else {
       toast.error(data.message)
